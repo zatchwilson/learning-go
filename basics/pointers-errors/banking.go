@@ -1,13 +1,34 @@
 package pointerserrors
 
+import (
+	"errors"
+	"fmt"
+)
+
+type Bitcoin int
+
 type Wallet struct {
-	balance int
+	balance Bitcoin
 }
 
-func (w *Wallet) Deposit(amount int) { //Passing pointer
+func (b Bitcoin) String() string {
+	return fmt.Sprintf("%d BTC", b)
+}
+
+func (w *Wallet) Deposit(amount Bitcoin) { //Passing pointer
 	w.balance += amount
 }
 
-func (w *Wallet) Balance() int { //Passing pointer to the wallet we need to alter
+var ErrInsufficientFunds = errors.New("cannot withdraw, insufficient funds")
+
+func (w *Wallet) Withdraw(amount Bitcoin) error {
+	if amount > w.balance {
+		return ErrInsufficientFunds
+	}
+	w.balance -= amount
+	return nil
+}
+
+func (w *Wallet) Balance() Bitcoin { //Passing pointer to the wallet we need to alter
 	return w.balance
 }
